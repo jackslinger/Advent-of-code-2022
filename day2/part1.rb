@@ -60,4 +60,23 @@ rounds = File.open("day2/input.txt").read.split("\n").map{ |line| Round.new(line
 #   puts "Round #{index + 1}: opponent #{round.opponent_choice} you #{round.your_choice}, score: #{round.score}"
 # end
 
-puts "\nTotal score: #{rounds.map(&:score).sum}" 
+puts "\nTotal score: #{rounds.map(&:score).sum}"
+
+
+# Not sure what is wrong here
+def score_for_round(round_string)
+  {
+    "A X" => (1 + 3),
+    "A Y" => (1 + 6),
+    "A Z" => (1 + 0),
+    "B X" => (2 + 0),
+    "B Y" => (2 + 3),
+    "B Z" => (2 + 6),
+    "C X" => (3 + 6),
+    "C Y" => (3 + 0),
+    "C Z" => (3 + 3),
+  }[round_string]
+end
+
+total = File.readlines("day2/input.txt").map(&:chomp).map{ |round| score_for_round(round) }.sum
+puts "\nTotal score (new way): #{total}"
