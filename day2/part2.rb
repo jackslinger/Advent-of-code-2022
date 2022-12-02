@@ -20,19 +20,64 @@ class Round
     # X means loose
     # Y means draw
     # Z means win
+
+    if your_code == "X"
+      if opponent_choice == :rock
+        :scissors
+      elsif opponent_choice == :paper
+        :rock
+      elsif opponent_choice == :scissors
+        :paper
+      end
+    elsif your_code == "Y"
+      if opponent_choice == :rock
+        :rock
+      elsif opponent_choice == :paper
+        :paper
+      elsif opponent_choice == :scissors
+        :scissors
+      end
+    elsif your_code == "Z"
+      if opponent_choice == :rock
+        :paper
+      elsif opponent_choice == :paper
+        :scissors
+      elsif opponent_choice == :scissors
+        :rock
+      end
+    end
   end
 
   def score
-    # TODO
-    0
+    if your_choice == :rock
+      if opponent_choice == :rock
+        1 + 3
+      elsif opponent_choice == :paper
+        1 + 0
+      elsif opponent_choice == :scissors
+        1 + 6
+      end
+    elsif your_choice == :paper
+      if opponent_choice == :rock
+        2 + 6
+      elsif opponent_choice == :paper
+        2 + 3
+      elsif opponent_choice == :scissors
+        2 + 0
+      end
+    elsif your_choice == :scissors
+      if opponent_choice == :rock
+        3 + 0
+      elsif opponent_choice == :paper
+        3 + 6
+      elsif opponent_choice == :scissors
+        3 + 3
+      end
+    end
   end
 end
 
 
-rounds = File.open("day2/input.txt").read.split("\n").map{ |line| Round.new(line) }
-
-# rounds.each_with_index do |round, index|
-#   puts "Round #{index + 1}: opponent #{round.opponent_choice} you #{round.your_choice}, score: #{round.score}"
-# end
+rounds = File.open("day2/example.txt").read.split("\n").map{ |line| Round.new(line) }
 
 puts "\nTotal score: #{rounds.map(&:score).sum}" 
