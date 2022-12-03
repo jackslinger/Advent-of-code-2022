@@ -1,5 +1,5 @@
 class Rucksack
-  attr_reader :first_compartment, :last_compartment
+  attr_reader :items, :first_compartment, :last_compartment
 
   def initialize(input)
     @items = input
@@ -26,3 +26,26 @@ shared_items = rucksacks.map { |ruck| ruck.shared_items.first }
 
 total = shared_items.map{ |item| priority_of_item(item) }.sum
 puts "Total priority of shared items: #{total}"
+
+# Part 2
+
+class Group
+  attr_reader :first, :second, :third
+
+  def initialize(first, second, third)
+    @first = first
+    @second = second
+    @third = third
+  end
+
+  def shared_items
+    first.items.split("").uniq.sort & second.items.split("").uniq.sort & third.items.split("").uniq.sort
+  end
+
+end
+
+groups = rucksacks.each_slice(3).map { |rucksacks| Group.new(rucksacks[0], rucksacks[1], rucksacks[2]) }
+puts groups.map{ |group| group.shared_items.join(" ") }
+
+badge_total = groups.map{ |group| priority_of_item(group.shared_items.first) }.sum
+puts "Total priority of the badges: #{badge_total}"
