@@ -1,6 +1,5 @@
 class Position
-  # include Comparable
-
+  include Comparable
   attr_reader :x, :y
 
   def initialize(x, y)
@@ -16,13 +15,9 @@ class Position
     x == other.x && y == other.y
   end
 
-  # def <=>(other)
-
+  # def distance_to(other)
+  #   ([x, other.x].max - [x, other.x].min) + ([y, other.y].max - [y, other.y].min)
   # end
-
-  def distance_to(other)
-    ([x, other.x].max - [x, other.x].min) + ([y, other.y].max - [y, other.y].min)
-  end
 end
 
 class Rope
@@ -34,48 +29,57 @@ class Rope
     @tail_locations = [@tail]
   end
 
-  def move_right(n = 1)
-    n.times do
-      @head = Position.new(head.x + 1, head.y)
-      if head.distance_to(tail) > 1
-        @tail = Position.new(head.x - 1, head.y)
-        @tail_locations << @tail
-      end
+  def move_right()
+    @head = Position.new(head.x + 1, head.y)
+    if tail_to_far?
+      # @tail = Position.new(head.x - 1, head.y)
+      move_tail
+      @tail_locations << @tail
     end
   end
   
-  def move_left(n = 1)
-    n.times do
-      @head = Position.new(head.x - 1, head.y)
-      if head.distance_to(tail) > 1
-        @tail = Position.new(head.x + 1, head.y)
-        @tail_locations << @tail
-      end
+  def move_left()
+    @head = Position.new(head.x - 1, head.y)
+    if tail_to_far?
+      # @tail = Position.new(head.x + 1, head.y)
+      move_tail
+      @tail_locations << @tail
     end
   end
   
-  def move_up(n = 1)
-    n.times do
-      @head = Position.new(head.x, head.y + 1)
-      if head.distance_to(tail) > 1
-        @tail = Position.new(head.x, head.y - 1)
-        @tail_locations << @tail
-      end
+  def move_up()
+    @head = Position.new(head.x, head.y + 1)
+    if tail_to_far?
+      # @tail = Position.new(head.x, head.y - 1)
+      move_tail
+      @tail_locations << @tail
     end
   end
   
-  def move_down(n = 1)
-    n.times do
-      @head = Position.new(head.x, head.y - 1)
-      if head.distance_to(tail) > 1
-        @tail = Position.new(head.x, head.y + 1)
-        @tail_locations << @tail
-      end
+  def move_down()
+    @head = Position.new(head.x, head.y - 1)
+    if tail_to_far?
+      # @tail = Position.new(head.x, head.y + 1)
+      move_tail
+      @tail_locations << @tail
     end
   end
 
   def unique_tail_locations
-    @tail_locations.uniq
+    @tail_locations.uniq{ |pos| pos.to_s }
+  end
+
+  private
+
+  def tail_to_far?
+    # head.distance_to(tail) > 1
+    ([head.x, tail.x].max - [head.x, tail.x].min) > 1 || ([head.y, tail.y].max - [head.y, tail.y].min) > 1
+  end
+
+  def move_tail
+    dx = head.x <=> tail.x
+    dy = head.y <=> tail.y
+    @tail = Position.new(tail.x + dx, tail.y + dy)
   end
 
 end
@@ -93,14 +97,27 @@ class Instruction
   end
 
   def follow(rope)
+    # puts self
     if direction == "R"
-      rope.move_right(distance)
+      distance.times do
+        rope.move_right
+        # display_grid(rope)
+      end
     elsif direction == "L"
-      rope.move_left(distance)
+      distance.times do
+        rope.move_left
+        # display_grid(rope)
+      end
     elsif direction == "U"
-      rope.move_up(distance)
+      distance.times do
+        rope.move_up
+        # display_grid(rope)
+      end
     elsif direction == "D"
-      rope.move_down(distance)
+      distance.times do
+        rope.move_down
+        # display_grid(rope)
+      end
     else
       raise "Unknown direction: #{direction}"
     end
@@ -143,13 +160,21 @@ end
 # Part 1
 
 rope = Rope.new
-instructions = File.open("day9/example.txt").read.split("\n").map { |line| Instruction.new(line) }
+instructions = File.open("day9/input.txt").read.split("\n").map { |line| Instruction.new(line) }
 
-display_grid(rope)
+# puts "== Initial state =="
+# puts "\n"
+
+# display_grid(rope)
+
 instructions.each do |instruction|
   instruction.follow(rope)
-  display_grid(rope)
 end
 
 puts "Unique tail locations: #{rope.unique_tail_locations.size}"
-display_tail_locations(rope.unique_tail_locations)
+
+# max_x = rope.unique_tail_locations.map(&:x).max
+# max_y = rope.unique_tail_locations.map(&:y).max
+# display_tail_locations(rope.unique_tail_locations, max_x + 1, max_y + 1)
+
+# display_tail_locations(rope.unique_tail_locations)
