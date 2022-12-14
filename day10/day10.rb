@@ -1,11 +1,42 @@
+class Screen
+  attr_reader :width, :rows, :position
+
+  def initialize(width = 40)
+    @width = width
+    @rows = []
+    @position = 0
+  end
+
+  def clock(x)
+    if position % 40 == 0
+      rows << []
+      @position = 0
+    end
+    if (position - 1) == x || position == x || (position + 1) == x
+      rows.last << "#"
+    else
+      rows.last << "."
+    end
+    @position += 1
+  end
+
+  def display
+    rows.each do |row|
+      puts row.join("")
+    end
+  end
+
+end
+
 class Cpu
   attr_reader :x, :cycle, :instructions
 
-  def initialize(instructions)
+  def initialize(instructions, screen = nil)
     @x = 1
     @cycle = 1
     @instructions = instructions
     @signals = []
+    @screen = screen
   end
 
   def run
@@ -34,14 +65,24 @@ class Cpu
       @signals << strength
       puts "Cycle #{cycle} - X #{x}, strength #{strength}"
     end
+    if @screen
+      @screen.clock(x)
+    end
     @cycle += 1
   end
 
 end
 
 instructions = File.open("day10/input.txt").read.split("\n")
-cpu = Cpu.new(instructions)
+screen = Screen.new
+cpu = Cpu.new(instructions, screen)
 cpu.run
 
 puts "Signal strength: #{cpu.total_signal_strength}"
+
+# Part 2
+
+puts "\n"
+puts "Part 2\n\n"
+screen.display
 
